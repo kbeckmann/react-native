@@ -90,6 +90,7 @@ var WebView = React.createClass({
   propTypes: {
     ...View.propTypes,
     url: PropTypes.string,
+    baseUrl: PropTypes.string,
     html: PropTypes.string,
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
@@ -192,6 +193,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        baseUrl={this.props.baseUrl}
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
