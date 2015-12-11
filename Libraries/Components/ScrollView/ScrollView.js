@@ -258,13 +258,18 @@ const ScrollView = React.createClass({
      */
     showsVerticalScrollIndicator: PropTypes.bool,
     /**
-     * An array of child indices determining which children get docked to the
-     * top of the screen when scrolling. For example, passing
-     * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
-     * top of the scroll view. This property is not supported in conjunction
-     * with `horizontal={true}`.
-     * @platform ios
+     * kbeckmann hack: When true, shows the scrollbar on the left side.
+     * @platform android
      */
+    setVerticalScrollbarPositionOnLeftSide: PropTypes.bool,
+     /**
+      * An array of child indices determining which children get docked to the
+      * top of the screen when scrolling. For example, passing
+      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
+      * top of the scroll view. This property is not supported in conjunction
+      * with `horizontal={true}`.
+      * @platform ios
+      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
     /**
