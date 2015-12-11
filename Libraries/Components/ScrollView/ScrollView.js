@@ -262,13 +262,18 @@ var ScrollView = React.createClass({
      */
     showsVerticalScrollIndicator: PropTypes.bool,
     /**
-     * An array of child indices determining which children get docked to the
-     * top of the screen when scrolling. For example, passing
-     * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
-     * top of the scroll view. This property is not supported in conjunction
-     * with `horizontal={true}`.
-     * @platform ios
+     * kbeckmann hack: When true, shows the scrollbar on the left side.
+     * @platform android
      */
+    setVerticalScrollbarPositionOnLeftSide: PropTypes.bool,
+     /**
+      * An array of child indices determining which children get docked to the
+      * top of the screen when scrolling. For example, passing
+      * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
+      * top of the scroll view. This property is not supported in conjunction
+      * with `horizontal={true}`.
+      * @platform ios
+      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
     /**
@@ -561,6 +566,38 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
+
+var validAttributes = {
+  ...ReactNativeViewAttributes.UIView,
+  alwaysBounceHorizontal: true,
+  alwaysBounceVertical: true,
+  automaticallyAdjustContentInsets: true,
+  bounces: true,
+  centerContent: true,
+  contentInset: {diff: insetsDiffer},
+  contentOffset: {diff: pointsDiffer},
+  decelerationRate: true,
+  horizontal: true,
+  indicatorStyle: true,
+  keyboardDismissMode: true,
+  keyboardShouldPersistTaps: true,
+  maximumZoomScale: true,
+  minimumZoomScale: true,
+  pagingEnabled: true,
+  removeClippedSubviews: true,
+  scrollEnabled: true,
+  scrollIndicatorInsets: {diff: insetsDiffer},
+  scrollsToTop: true,
+  setVerticalScrollbarPositionOnLeftSide: true,
+  showsHorizontalScrollIndicator: true,
+  showsVerticalScrollIndicator: true,
+  setVerticalScrollbarPositionOnLeftSide: true,
+  snapToInterval: true,
+  snapToAlignment: true,
+  stickyHeaderIndices: {diff: deepDiffer},
+  scrollEventThrottle: true,
+  zoomScale: true,
+};
 
 if (Platform.OS === 'android') {
   var nativeOnlyProps = { nativeOnly : { 'sendMomentumEvents' : true } };
