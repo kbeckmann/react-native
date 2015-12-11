@@ -1,5 +1,17 @@
 // Copyright 2015-present Facebook. All Rights Reserved.
 
+// kbeckmann fix //////////////////////
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:2.0.0'
+    }
+}
+///////////////////////////////////////
+
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
