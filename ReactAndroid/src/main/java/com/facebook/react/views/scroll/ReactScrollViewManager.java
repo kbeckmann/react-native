@@ -47,6 +47,11 @@ public class ReactScrollViewManager
     view.setVerticalScrollBarEnabled(value);
   }
 
+  @ReactProp(name = "setVerticalScrollbarPositionOnLeftSide")
+  public void setVerticalScrollbarPositionOnLeftSide(ReactScrollView view, boolean left) {
+    view.setVerticalScrollbarPosition(left ? view.SCROLLBAR_POSITION_LEFT : view.SCROLLBAR_POSITION_RIGHT);
+  }
+
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
