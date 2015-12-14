@@ -92,12 +92,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setHTML:(NSString *)HTML
 {
   _html = HTML;
+  [_webView loadHTMLString:_html baseURL:[NSURL URLWithString:_baseUrl]];
 }
 
 - (void)setBaseUrl:(NSString *)baseUrl
 {
   _baseUrl = baseUrl;
-  [_webView loadHTMLString:_html baseURL:[NSURL URLWithString:_baseUrl]];
 }
 
 - (void)layoutSubviews
