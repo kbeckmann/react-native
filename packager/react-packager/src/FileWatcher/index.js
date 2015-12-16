@@ -91,27 +91,14 @@ class FileWatcher extends EventEmitter {
 }
 
 function createWatcher(rootConfig) {
-  return detectingWatcherClass.then(function(Watcher) {
-    const watcher = new Watcher(rootConfig.dir, {
-      glob: rootConfig.globs,
-      dot: false,
-    });
+ return detectingWatcherClass.then(function(Watcher) {
+   const watcher = new Watcher(rootConfig.dir, {
+     glob: rootConfig.globs,
+     dot: false,
+   });
 
-    return new Promise(function(resolve, reject) {
-      const rejectTimeout = setTimeout(function() {
-        reject(new Error([
-          'Watcher took too long to load',
-          'Try running `watchman version` from your terminal',
-          'https://facebook.github.io/watchman/docs/troubleshooting.html',
-        ].join('\n')));
-      }, MAX_WAIT_TIME);
-
-      watcher.once('ready', function() {
-        clearTimeout(rejectTimeout);
-        resolve(watcher);
-      });
-    });
-  });
+   return Promise.resolve(watcher);
+ });
 }
 
 module.exports = FileWatcher;
