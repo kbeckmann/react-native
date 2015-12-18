@@ -75,6 +75,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   private WebViewConfig mWebViewConfig;
 
+  private @Nullable String mBaseURL;
   private static class ReactWebViewClient extends WebViewClient {
 
     private boolean mLastLoadFailed = false;
@@ -274,10 +275,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "html")
   public void setHtml(WebView view, @Nullable String html) {
     if (html != null) {
-      view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+      if (mBaseURL != null) {
+        view.loadDataWithBaseURL(mBaseURL, html, HTML_MIME_TYPE, HTML_ENCODING, null);
+      } else {
+        view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+      }
     } else {
       view.loadUrl(BLANK_URL);
     }
+  }
+
+  @ReactProp(name = "baseURL")
+  public void setBaseURL(WebView view, @Nullable String baseURL) {
+    mBaseURL = baseURL;
   }
 
   @ReactProp(name = "url")

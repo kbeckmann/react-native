@@ -45,6 +45,7 @@ var WebView = React.createClass({
     onLoadStart: PropTypes.func,
     onError: PropTypes.func,
     url: PropTypes.string,
+    baseURL: PropTypes.string,
     html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -133,6 +134,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        baseURL={this.props.baseURL}
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
