@@ -33,7 +33,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 {
   UIWebView *_webView;
   NSString *_injectedJavaScript;
-  NSString *_baseUrl;
+  NSString *_baseURL;
   NSString *_html;
 }
 
@@ -92,12 +92,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setHTML:(NSString *)HTML
 {
   _html = HTML;
-  [_webView loadHTMLString:_html baseURL:[NSURL URLWithString:_baseUrl]];
+  [_webView loadHTMLString:_html baseURL:[NSURL URLWithString:_baseURL]];
 }
 
-- (void)setBaseUrl:(NSString *)baseUrl
+- (void)setBaseURL:(NSString *)baseURL
 {
-  _baseUrl = baseUrl;
+  _baseURL = baseURL;
 }
 
 - (void)layoutSubviews

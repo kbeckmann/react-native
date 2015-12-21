@@ -87,7 +87,7 @@ var WebView = React.createClass({
   propTypes: {
     ...View.propTypes,
     url: PropTypes.string,
-    baseUrl: PropTypes.string,
+    baseURL: PropTypes.string,
     html: PropTypes.string,
     /**
      * Function that returns a view to show if there's an error.
@@ -202,7 +202,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
-        baseUrl={this.props.baseUrl}
+        baseURL={this.props.baseURL}
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
