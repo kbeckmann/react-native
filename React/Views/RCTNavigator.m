@@ -357,12 +357,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   __weak RCTNavigator *weakSelf = self;
   [tc.containerView addSubview: _dummyView];
   [tc animateAlongsideTransition: ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-    RCTWrapperViewController *fromController =
-      (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextFromViewControllerKey];
-    RCTWrapperViewController *toController =
-      (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
-    NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
-    NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
+    
+    NSUInteger indexOfFrom;
+    NSUInteger indexOfTo;
+    UIViewController *fromController = [context viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController *toController = [context viewControllerForKey:UITransitionContextToViewControllerKey];
+
+    if ([fromController isKindOfClass: [RCTWrapperViewController class]] &&
+        [toController isKindOfClass: [RCTWrapperViewController class]])
+    {
+      RCTWrapperViewController *fromWrapper = (RCTWrapperViewController *)fromController;
+      RCTWrapperViewController *toWrapper = (RCTWrapperViewController *)toController;
+      indexOfFrom = [_currentViews indexOfObject:fromWrapper.navItem];
+      indexOfTo = [_currentViews indexOfObject:toWrapper.navItem];
+    }
+    else if ([fromController isKindOfClass: [RCTWrapperViewController class]]) {
+      indexOfFrom = 1;
+      indexOfTo = 0;
+    }
+    else {
+      indexOfFrom = 0;
+      indexOfTo = 1;
+    }
+        
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
     _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
     _currentlyTransitioningFrom = indexOfFrom;
