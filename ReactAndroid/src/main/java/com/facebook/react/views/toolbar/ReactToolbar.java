@@ -9,6 +9,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -175,7 +176,7 @@ public class ReactToolbar extends Toolbar {
     String uri = source != null ? source.getString("uri") : null;
     if (uri == null) {
       setLogo(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+    } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
       DraweeController controller = Fresco.newDraweeControllerBuilder()
           .setUri(Uri.parse(uri))
           .setControllerListener(mLogoControllerListener)
@@ -191,7 +192,8 @@ public class ReactToolbar extends Toolbar {
     String uri = source != null ? source.getString("uri") : null;
     if (uri == null) {
       setNavigationIcon(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+    } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
+        Log.e("Jens", "navicon from url");
       DraweeController controller = Fresco.newDraweeControllerBuilder()
           .setUri(Uri.parse(uri))
           .setControllerListener(mNavIconControllerListener)
@@ -199,6 +201,7 @@ public class ReactToolbar extends Toolbar {
           .build();
       mNavIconHolder.setController(controller);
     } else {
+        Log.e("Jens", "navicon from res");
       setNavigationIcon(getDrawableResourceByName(uri));
     }
   }
@@ -207,7 +210,7 @@ public class ReactToolbar extends Toolbar {
     String uri = source != null ? source.getString("uri") : null;
     if (uri == null) {
       setOverflowIcon(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
+    } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
       DraweeController controller = Fresco.newDraweeControllerBuilder()
           .setUri(Uri.parse(uri))
           .setControllerListener(mOverflowIconControllerListener)
@@ -230,7 +233,7 @@ public class ReactToolbar extends Toolbar {
         ReadableMap icon = action.hasKey(PROP_ACTION_ICON) ? action.getMap(PROP_ACTION_ICON) : null;
         if (icon != null) {
           String iconSource = icon.getString("uri");
-          if (iconSource.startsWith("http://") || iconSource.startsWith("https://")) {
+          if (iconSource.startsWith("http://") || iconSource.startsWith("https://") || iconSource.startsWith("file://")) {
             setMenuItemIcon(item, icon);
           } else {
             item.setIcon(getDrawableResourceByName(iconSource));
