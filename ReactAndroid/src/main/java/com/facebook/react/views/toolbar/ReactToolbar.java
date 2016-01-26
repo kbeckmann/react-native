@@ -193,7 +193,6 @@ public class ReactToolbar extends Toolbar {
     if (uri == null) {
       setNavigationIcon(null);
     } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
-        Log.e("Jens", "navicon from url");
       DraweeController controller = Fresco.newDraweeControllerBuilder()
           .setUri(Uri.parse(uri))
           .setControllerListener(mNavIconControllerListener)
@@ -201,7 +200,6 @@ public class ReactToolbar extends Toolbar {
           .build();
       mNavIconHolder.setController(controller);
     } else {
-        Log.e("Jens", "navicon from res");
       setNavigationIcon(getDrawableResourceByName(uri));
     }
   }
@@ -231,6 +229,7 @@ public class ReactToolbar extends Toolbar {
         ReadableMap action = actions.getMap(i);
         MenuItem item = menu.add(Menu.NONE, Menu.NONE, i, action.getString(PROP_ACTION_TITLE));
         ReadableMap icon = action.hasKey(PROP_ACTION_ICON) ? action.getMap(PROP_ACTION_ICON) : null;
+
         if (icon != null) {
           String iconSource = icon.getString("uri");
           if (iconSource.startsWith("http://") || iconSource.startsWith("https://") || iconSource.startsWith("file://")) {
@@ -239,6 +238,7 @@ public class ReactToolbar extends Toolbar {
             item.setIcon(getDrawableResourceByName(iconSource));
           }
         }
+
         int showAsAction = action.hasKey(PROP_ACTION_SHOW)
             ? action.getInt(PROP_ACTION_SHOW)
             : MenuItem.SHOW_AS_ACTION_NEVER;
