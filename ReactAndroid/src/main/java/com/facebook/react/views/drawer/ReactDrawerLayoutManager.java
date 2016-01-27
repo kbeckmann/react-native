@@ -95,6 +95,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     }
   }
 
+  @ReactProp(name = "drawerSwipeable", defaultBoolean = true)
+  public void setDrawerSwipeable(ReactDrawerLayout view, boolean swipeable) {
+    view.setDrawerSwipeable(swipeable);
+  }
+
   @Override
   public void setElevation(ReactDrawerLayout view, float elevation) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
