@@ -76,6 +76,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerWidth(widthInPx);
   }
 
+  @ReactProp(name = "drawerSwipeable", defaultBoolean = true)
+  public void setDrawerSwipeable(ReactDrawerLayout view, boolean swipeable) {
+    view.setDrawerSwipeable(swipeable);
+  }
+
   @Override
   public boolean needsCustomLayoutForChildren() {
     // Return true, since DrawerLayout will lay out it's own children.
