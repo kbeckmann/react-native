@@ -119,6 +119,10 @@ var DrawerLayoutAndroid = React.createClass({
       'locked-open'
     ]),
     /**
+     * Specifies if it should be possible to open and close the drawer by swiping.
+     */
+    drawerSwipeable: ReactPropTypes.bool,
+    /**
      * Function called whenever there is an interaction with the navigation view.
      */
     onDrawerSlide: ReactPropTypes.func,
