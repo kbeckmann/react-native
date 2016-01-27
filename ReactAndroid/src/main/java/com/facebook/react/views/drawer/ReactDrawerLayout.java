@@ -59,6 +59,15 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     setDrawerProperties();
   }
 
+  /* package */ void setDrawerSwipeable(boolean swipeable) {
+    if (swipeable) {
+      setDrawerLockMode(LOCK_MODE_UNLOCKED);
+    }
+    else {
+      setDrawerLockMode(LOCK_MODE_LOCKED_CLOSED);
+    }
+  }
+
   // Sets the properties of the drawer, after the navigationView has been set.
   /* package */ void setDrawerProperties() {
     if (this.getChildCount() == 2) {
