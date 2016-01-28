@@ -492,9 +492,7 @@ var NavigatorIOS = React.createClass({
           this.setState({
             requestedTopOfStack: newRequestedTopOfStack,
             makingNavigatorRequest: true,
-            // Not actually updating the indices yet until we get the native
-            // `onNavigationComplete`.
-            updatingAllIndicesAtOrBeyond: null,
+            updatingAllIndicesAtOrBeyond: newRequestedTopOfStack
           });
         });
       }
@@ -606,9 +604,10 @@ var NavigatorIOS = React.createClass({
     var {component, wrapperStyle, passProps, ...route} = route;
     var {itemWrapperStyle, ...props} = this.props;
     var shouldUpdateChild =
-      this.state.updatingAllIndicesAtOrBeyond &&
+      (this.state.updatingAllIndicesAtOrBeyond !== null) &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
     var Component = component;
+
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
