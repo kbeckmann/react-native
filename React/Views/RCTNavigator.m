@@ -191,7 +191,7 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
+@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate, UISearchBarDelegate>
 
 @property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
@@ -260,6 +260,12 @@ NSInteger kNeverProgressed = -10000;
 // navigation animation/interaction.
 @property (nonatomic, readonly, strong) UIView *dummyView;
 
+@property (nonatomic, copy) RCTDirectEventBlock onSearchText;
+@property (nonatomic, copy) RCTDirectEventBlock onSearchPressed;
+@property (nonatomic, copy) RCTDirectEventBlock onSearchCancelled;
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, strong) UIColor *buttonTintColor;
+
 @end
 
 @implementation RCTNavigator
@@ -299,6 +305,71 @@ NSInteger kNeverProgressed = -10000;
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+// called when text changes (including clear)
+- (void)searchBar:(__unused UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+  NSDictionary<NSString *, id> *event = @{@"text": searchText };
+  _onSearchText(event);
+}
+
+// called when keyboard search button pressed
+- (void)searchBarSearchButtonClicked:(__unused UISearchBar *)searchBar {
+  NSDictionary<NSString *, id> *event = @{};
+  _onSearchPressed(event);
+}
+
+// called when cancel button pressed
+- (void)searchBarCancelButtonClicked:(__unused UISearchBar *)searchBar {
+  NSDictionary<NSString *, id> *event = @{};
+  _onSearchCancelled(event);
+}
+
+- (void)showSearch:(NSString *)prompt
+       placeholder:(NSString *)placeholder
+              text:(NSString *)text
+{
+  _searchBar = [UISearchBar new];
+  [_searchBar sizeToFit];
+  [_searchBar setDelegate:self];
+
+  [_searchBar setPrompt:prompt];
+  [_searchBar setPlaceholder:placeholder];
+  [_searchBar setText:text];
+  _searchBar.showsCancelButton = YES;
+  
+  [_navigationController.navigationBar addSubview:_searchBar];
+  [_searchBar becomeFirstResponder];
+
+  // Hack for hiding the right navbar button, it is displayed overlapping the "Cancel" label otherwise
+  UIViewController *topView = [_navigationController topViewController];
+  if ([topView isKindOfClass:[RCTWrapperViewController class]]) {
+    RCTWrapperViewController *ctrl = (RCTWrapperViewController *)topView;
+    RCTNavItem *item = [ctrl navItem];
+    if (item.rightButtonItem) {
+      _buttonTintColor = item.rightButtonItem.tintColor;
+      [item.rightButtonItem setTintColor:[UIColor clearColor]];
+      [item.rightButtonItem setEnabled:NO];
+    }
+  }
+}
+
+- (void)hideSearch
+{
+  [_searchBar removeFromSuperview];
+  _searchBar = nil; // Release reference for garbage collection
+
+  // Show navbar button again
+  UIViewController *topView = [_navigationController topViewController];
+  if ([topView isKindOfClass:[RCTWrapperViewController class]]) {
+    RCTWrapperViewController *ctrl = (RCTWrapperViewController *)topView;
+    RCTNavItem *item = [ctrl navItem];
+    if (item.rightButtonItem) {
+      [item.rightButtonItem setTintColor:_buttonTintColor];
+      _buttonTintColor = nil;
+      [item.rightButtonItem setEnabled:YES];
+    }
+  }
+}
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
