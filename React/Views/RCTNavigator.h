@@ -31,4 +31,10 @@
  */
 - (BOOL)requestSchedulingJavaScriptNavigation;
 
+- (void)showSearch:(NSString *)prompt
+       placeholder:(NSString *)placeholder
+              text:(NSString *)text;
+
+- (void)hideSearch;
+
 @end

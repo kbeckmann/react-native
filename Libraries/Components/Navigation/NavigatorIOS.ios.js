@@ -37,6 +37,11 @@ function getuid() {
 }
 
 class NavigatorTransitionerIOS extends React.Component {
+
+  state = {
+    callbacks: {},
+  };
+
   requestSchedulingNavigation = (cb) => {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       ReactNative.findNodeHandle(this),
@@ -45,40 +50,69 @@ class NavigatorTransitionerIOS extends React.Component {
     );
   };
 
+  showSearch(data) {
+    this.setState({
+      callbacks: {
+        textChanged: data.textChangedCb,
+        searchPressed: data.searchPressedCb,
+        cancelPressed: data.cancelPressedCb
+      }
+    });
+
+    RCTNavigatorManager.showSearch(
+      React.findNodeHandle(this),
+      data.prompt,
+      data.placeholder,
+      data.text,
+    );
+
+  }
+
+  hideSearch() {
+    this.setState({
+      callbacks: {
+        textChanged: undefined,
+        searchPressed: undefined,
+        cancelPressed: undefined
+      }
+    });
+
+    RCTNavigatorManager.hideSearch(
+      React.findNodeHandle(this),
+    );
+
+  }
+
+  onSearchText(ev) {
+    if (this.state.callbacks.textChanged) {
+      this.state.callbacks.textChanged(ev.nativeEvent.text);
+    }
+  }
+
+  onSearchPressed() {
+    if (this.state.callbacks.searchPressed) {
+      this.state.callbacks.searchPressed();
+    }
+  }
+
+  onSearchCancelled() {
+    if (this.state.callbacks.cancelPressed) {
+      this.state.callbacks.cancelPressed();
+    }
+  }
+
   render() {
     return (
-      <RCTNavigator {...this.props}/>
+      <RCTNavigator
+        ref={'navigator'}
+        onSearchText={this.onSearchText}
+        onSearchPressed={this.onSearchPressed}
+        onSearchCancelled={this.onSearchCancelled}
+        {...this.props}
+      />
     );
   }
 }
-
-const SystemIconLabels = {
-  done: true,
-  cancel: true,
-  edit: true,
-  save: true,
-  add: true,
-  compose: true,
-  reply: true,
-  action: true,
-  organize: true,
-  bookmarks: true,
-  search: true,
-  refresh: true,
-  stop: true,
-  camera: true,
-  trash: true,
-  play: true,
-  pause: true,
-  rewind: true,
-  'fast-forward': true,
-  undo: true,
-  redo: true,
-  'page-curl': true,
-};
-const SystemIcons = keyMirror(SystemIconLabels);
-
-type SystemButtonType = $Enum<typeof SystemIconLabels>;
 
 type Route = {
   component: Function,
@@ -598,6 +632,14 @@ var NavigatorIOS = React.createClass({
   childContextTypes: {
     onFocusRequested: React.PropTypes.func,
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
+  },
+
+  showSearch(data) {
+    this.refs[TRANSITIONER_REF].showSearch(data);
+  },
+
+  hideSearch(data) {
+    this.refs[TRANSITIONER_REF].hideSearch(data);
   },
 
   _tryLockNavigator: function(cb: () => void) {
