@@ -35,6 +35,13 @@ function getuid() {
 }
 
 var NavigatorTransitionerIOS = React.createClass({
+
+  getDefaultState() {
+    return {
+      callbacks: {}
+    };
+  },
+
   requestSchedulingNavigation: function(cb) {
     RCTNavigatorManager.requestSchedulingJavaScriptNavigation(
       React.findNodeHandle(this),
@@ -43,9 +50,66 @@ var NavigatorTransitionerIOS = React.createClass({
     );
   },
 
+  showSearch(data) {
+    this.setState({
+      callbacks: {
+        textChanged: data.textChangedCb,
+        searchPressed: data.searchPressedCb,
+        cancelPressed: data.cancelPressedCb
+      }
+    });
+
+    RCTNavigatorManager.showSearch(
+      React.findNodeHandle(this),
+      data.prompt,
+      data.placeholder,
+      data.text,
+    );
+
+  },
+
+  hideSearch() {
+    this.setState({
+      callbacks: {
+        textChanged: undefined,
+        searchPressed: undefined,
+        cancelPressed: undefined
+      }
+    });
+
+    RCTNavigatorManager.hideSearch(
+      React.findNodeHandle(this),
+    );
+
+  },
+
+  onSearchText(ev) {
+    if (this.state.callbacks.textChanged) {
+      this.state.callbacks.textChanged(ev.nativeEvent.text);
+    }
+  },
+
+  onSearchPressed() {
+    if (this.state.callbacks.searchPressed) {
+      this.state.callbacks.searchPressed();
+    }
+  },
+
+  onSearchCancelled() {
+    if (this.state.callbacks.cancelPressed) {
+      this.state.callbacks.cancelPressed();
+    }
+  },
+
   render: function() {
     return (
-      <RCTNavigator {...this.props}/>
+      <RCTNavigator
+        ref={'navigator'}
+        onSearchText={this.onSearchText}
+        onSearchPressed={this.onSearchPressed}
+        onSearchCancelled={this.onSearchCancelled}
+        {...this.props}
+      />
     );
   },
 });
@@ -420,6 +484,14 @@ var NavigatorIOS = React.createClass({
   childContextTypes: {
     onFocusRequested: React.PropTypes.func,
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
+  },
+
+  showSearch(data) {
+    this.refs[TRANSITIONER_REF].showSearch(data);
+  },
+
+  hideSearch(data) {
+    this.refs[TRANSITIONER_REF].hideSearch(data);
   },
 
   _tryLockNavigator: function(cb: () => void) {

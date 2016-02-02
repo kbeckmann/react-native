@@ -27,6 +27,37 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onNavigationProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onNavigationComplete, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSearchText, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSearchPressed, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSearchCancelled, RCTDirectEventBlock)
+
+RCT_EXPORT_METHOD(showSearch:(nonnull NSNumber *)reactTag
+                      prompt:(NSString *)prompt
+                 placeholder:(NSString *)placeholder
+                        text:(NSString *)text)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTNavigator *> *viewRegistry){
+     RCTNavigator *navigator = viewRegistry[reactTag];
+     if ([navigator isKindOfClass:[RCTNavigator class]]) {
+       [navigator showSearch:prompt
+                 placeholder:placeholder
+                        text:text
+        ];
+     }
+   }];
+}
+
+RCT_EXPORT_METHOD(hideSearch:(nonnull NSNumber *)reactTag)
+{
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTNavigator *> *viewRegistry){
+     RCTNavigator *navigator = viewRegistry[reactTag];
+     if ([navigator isKindOfClass:[RCTNavigator class]]) {
+       [navigator hideSearch];
+     }
+   }];
+}
 
 // TODO: remove error callbacks
 RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag
