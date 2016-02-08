@@ -159,6 +159,17 @@ var ToolbarAndroid = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
+    searchText: ReactPropTypes.string,
+    searchPrompt: ReactPropTypes.string,
+    searchPlaceholder: ReactPropTypes.string
+  },
+
+  hideSearch: function() {
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this.refs.toolbar),
+      UIManager.ToolbarAndroid.Commands.hideSearch,
+      null
+    );
   },
 
   render: function() {
@@ -191,7 +202,14 @@ var ToolbarAndroid = React.createClass({
       nativeProps.nativeActions = nativeActions;
     }
 
-    return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
+    delete nativeProps.onSearchText;
+
+    return <NativeToolbar
+      ref={'toolbar'}
+      onSelect={this._onSelect}
+      onSearchText={this._onTextChanged}
+      {...nativeProps}
+    />;
   },
 
   _onSelect: function(event) {
@@ -202,6 +220,12 @@ var ToolbarAndroid = React.createClass({
       this.props.onActionSelected && this.props.onActionSelected(position);
     }
   },
+
+  _onTextChanged: function(event) {
+    if (this.props.onSearchText) {
+      this.props.onSearchText(event.nativeEvent.text);
+    }
+  }
 });
 
 var toolbarAttributes = {
