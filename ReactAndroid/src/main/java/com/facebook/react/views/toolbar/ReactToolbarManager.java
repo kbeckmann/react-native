@@ -23,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.react.R;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -39,6 +41,7 @@ import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
  */
 public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
+  private static final int HIDE_SEARCH = 0;
   private static final String REACT_CLASS = "ToolbarAndroid";
 
   @Override
@@ -122,6 +125,21 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     view.setActions(actions);
   }
 
+  @ReactProp(name = "searchPrompt")
+  public void setSearchPrompt(ReactToolbar view, @Nullable String prompt) {
+    view.setSearchPrompt(prompt);
+  }
+
+  @ReactProp(name = "searchPlaceholder")
+  public void setSearchPlaceholder(ReactToolbar view, @Nullable String placeholder) {
+    view.setSearchPlaceholder(placeholder);
+  }
+
+  @ReactProp(name = "searchText")
+  public void setSearchText(ReactToolbar view, @Nullable String text) {
+    view.setSearchText(text);
+  }
+
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactToolbar view) {
     final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
@@ -130,8 +148,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), SystemClock.uptimeMillis(), -1));
+            view.onNavClicked();
           }
         });
 
@@ -158,6 +175,24 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
             "never", MenuItem.SHOW_AS_ACTION_NEVER,
             "always", MenuItem.SHOW_AS_ACTION_ALWAYS,
             "ifRoom", MenuItem.SHOW_AS_ACTION_IF_ROOM));
+  }
+
+  @Override
+  public @Nullable Map<String, Integer> getCommandsMap() {
+    return MapBuilder.of("hideSearch", HIDE_SEARCH);
+  }
+
+  @Override
+  public void receiveCommand(
+    ReactToolbar root,
+    int commandId,
+    @Nullable ReadableArray args)
+  {
+    switch (commandId) {
+      case HIDE_SEARCH:
+        root.hideSearch();
+        break;
+    }
   }
 
   @Override
