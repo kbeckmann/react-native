@@ -13,10 +13,17 @@ import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.SystemClock;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
+import javax.annotation.Nullable;
+
+import com.facebook.react.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -30,19 +37,26 @@ import com.facebook.imagepipeline.image.QualityInfo;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
-
-import javax.annotation.Nullable;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
+import com.facebook.react.views.toolbar.events.ToolbarSearchCancelledEvent;
+import com.facebook.react.views.toolbar.events.ToolbarSearchPressedEvent;
+import com.facebook.react.views.toolbar.events.ToolbarSearchTextEvent;
 
 /**
  * Custom implementation of the {@link Toolbar} widget that adds support for remote images in logo
  * and navigationIcon using fresco.
  */
-public class ReactToolbar extends Toolbar {
+public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListener, SearchView.OnCloseListener, View.OnClickListener {
+  private static final String LOG_TAG = "ReactToolbar";
 
   private static final String PROP_ACTION_ICON = "icon";
   private static final String PROP_ACTION_SHOW = "show";
   private static final String PROP_ACTION_SHOW_WITH_TEXT = "showWithText";
   private static final String PROP_ACTION_TITLE = "title";
+  private static final String PROP_ACTION_ISSEARCH = "isSearch";
 
   private static final String PROP_ICON_URI = "uri";
   private static final String PROP_ICON_WIDTH = "width";
@@ -57,6 +71,17 @@ public class ReactToolbar extends Toolbar {
   private IconControllerListener mLogoControllerListener;
   private IconControllerListener mNavIconControllerListener;
   private IconControllerListener mOverflowIconControllerListener;
+
+  private enum SearchState {
+    HIDDEN,
+    VISIBLE_FOCUSED,
+    VISIBLE_NOT_FOCUSED
+  };
+  private SearchState mSearchState = SearchState.HIDDEN;
+  private SearchView mSearch = null;
+  private MenuItem mSearchMenuItem = null;
+
+  private Drawable mNavIconDrawable = null;
 
   /**
    * Attaches specific icon width & height to a BaseControllerListener which will be used to
@@ -149,7 +174,9 @@ public class ReactToolbar extends Toolbar {
     mNavIconControllerListener = new IconControllerListener(mNavIconHolder) {
       @Override
       protected void setDrawable(Drawable d) {
-        setNavigationIcon(d);
+        if (mSearchState == SearchState.HIDDEN) {
+          setNavigationIcon(mNavIconDrawable);
+        }
       }
     };
 
@@ -224,7 +251,9 @@ public class ReactToolbar extends Toolbar {
   }
 
   /* package */ void setNavIconSource(@Nullable ReadableMap source) {
-    setIconSource(source, mNavIconControllerListener, mNavIconHolder);
+    if (mSearchState == SearchState.HIDDEN) {
+      setIconSource(source, mNavIconControllerListener, mNavIconHolder);
+    }
   }
 
   /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
@@ -253,6 +282,16 @@ public class ReactToolbar extends Toolbar {
           showAsAction = showAsAction | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
         }
         item.setShowAsAction(showAsAction);
+
+        boolean isSearch = action.hasKey(PROP_ACTION_ISSEARCH) ? action.getBoolean(PROP_ACTION_ISSEARCH) : false;
+        if (isSearch) {
+          mSearch = new SearchView(getContext());
+          mSearch.setOnQueryTextListener(this);
+          mSearch.setOnCloseListener(this);
+          mSearch.setOnSearchClickListener(this);
+          mSearchMenuItem = item;
+          item.setActionView(mSearch);
+        }
       }
     }
   }
@@ -328,6 +367,125 @@ public class ReactToolbar extends Toolbar {
     } else {
       return null;
     }
+  }
+
+  public void hideSearch() {
+    Log.d(LOG_TAG, "Hide search");
+    setSearchState(SearchState.HIDDEN);
+  }
+
+  private void hideKeyboard() {
+    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    if(imm.isAcceptingText()) {
+      imm.hideSoftInputFromWindow(mSearch.getWindowToken(), 0);
+    }
+  }
+
+  private void setSearchState(SearchState state) {
+
+    switch (state) {
+      case HIDDEN:
+        if (mSearchState != SearchState.HIDDEN) {
+          hideKeyboard();
+          setNavigationIcon(mNavIconDrawable);
+        }
+        break;
+
+      case VISIBLE_FOCUSED:
+        setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        break;
+
+      case VISIBLE_NOT_FOCUSED:
+        if (mSearchState == SearchState.VISIBLE_FOCUSED) {
+          hideKeyboard();
+        }
+        break;
+    }
+
+    Log.d(LOG_TAG, "Change state " + mSearchState.name() + " -> " + state.name());
+    mSearchState = state;
+  }
+
+  public void setSearchPrompt(@Nullable String prompt) {
+  }
+
+  public void setSearchPlaceholder(@Nullable String placeholder) {
+    if (mSearch != null) {
+      mSearch.setQueryHint(placeholder);
+    }
+  }
+
+  public void setSearchText(@Nullable String text) {
+      if (mSearch != null) {
+      mSearch.setQuery(text, false);
+    }
+  }
+
+  public void onNavClicked() {
+    Log.d(LOG_TAG, "onNavClicked");
+
+    if (mSearchState == SearchState.HIDDEN) {
+      ReactContext reactContext = (ReactContext)getContext();
+      EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      eventDispatcher.dispatchEvent(new ToolbarClickEvent(getId(), SystemClock.uptimeMillis(), -1));
+    }
+    else {
+      onClose();
+
+      //setIconified doesnt work unless the searchview is cleared and unfocused
+      mSearch.setQuery(null, false);
+      mSearch.clearFocus();
+      mSearch.setIconified(true);
+    }
+  }
+
+  public boolean onQueryTextSubmit(String query) {
+    Log.d(LOG_TAG, "onQueryTextSubmit");
+
+    ReactContext reactContext = (ReactContext)getContext();
+
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    ToolbarSearchPressedEvent event = new ToolbarSearchPressedEvent(getId(), SystemClock.uptimeMillis());
+    eventDispatcher.dispatchEvent(event);
+
+    setSearchState(SearchState.VISIBLE_NOT_FOCUSED);
+
+    return false;
+  }
+
+  public boolean onQueryTextChange(String newText) {
+    ReactContext reactContext = (ReactContext)getContext();
+
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    ToolbarSearchTextEvent event = new ToolbarSearchTextEvent(getId(), SystemClock.uptimeMillis(), newText);
+    eventDispatcher.dispatchEvent(event);
+
+    return true;
+  }
+
+  public boolean onClose() {
+    Log.d(LOG_TAG, "onClose");
+
+    ReactContext reactContext = (ReactContext)getContext();
+
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    ToolbarSearchCancelledEvent event = new ToolbarSearchCancelledEvent(getId(), SystemClock.uptimeMillis());
+    eventDispatcher.dispatchEvent(event);
+
+    setSearchState(SearchState.HIDDEN);
+
+    return false;
+  }
+
+  public void onClick(View view) {
+    Log.d(LOG_TAG, "onClick");
+
+    ReactContext reactContext = (ReactContext)getContext();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    ToolbarClickEvent event = new ToolbarClickEvent(getId(), SystemClock.uptimeMillis(), mSearchMenuItem.getOrder());
+    eventDispatcher.dispatchEvent(event);
+
+    setSearchState(SearchState.VISIBLE_FOCUSED);
   }
 
 }
