@@ -77,6 +77,9 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .put("topLoadingFinish", MapBuilder.of("registrationName", "onLoadingFinish"))
         .put("topLoadingError", MapBuilder.of("registrationName", "onLoadingError"))
         .put("topLayout", MapBuilder.of("registrationName", "onLayout"))
+        .put("topSearchCancelled", MapBuilder.of("registrationName", "onSearchCancelled"))
+        .put("topSearchPressed", MapBuilder.of("registrationName", "onSearchPressed"))
+        .put("topSearchText", MapBuilder.of("registrationName", "onSearchText"))
         .build();
   }
 
