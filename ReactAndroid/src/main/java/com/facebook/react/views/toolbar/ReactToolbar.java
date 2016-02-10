@@ -5,9 +5,11 @@ package com.facebook.react.views.toolbar;
 import javax.annotation.Nullable;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.facebook.react.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -37,6 +40,8 @@ import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 import com.facebook.react.views.toolbar.events.ToolbarSearchCancelledEvent;
 import com.facebook.react.views.toolbar.events.ToolbarSearchPressedEvent;
 import com.facebook.react.views.toolbar.events.ToolbarSearchTextEvent;
+
+import java.util.ArrayList;
 
 /**
  * Custom implementation of the {@link Toolbar} widget that adds support for remote images in logo
@@ -67,6 +72,8 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   private MenuItem mSearchMenuItem = null;
 
   private Drawable mNavIconDrawable = null;
+  private Drawable mNavIconOverride = null;
+  private int mNavTintColor;
 
   private final ControllerListener<ImageInfo> mLogoControllerListener =
       new BaseControllerListener<ImageInfo>() {
@@ -92,9 +99,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
             @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mNavIconDrawable = new DrawableWithIntrinsicSize(mNavIconHolder.getTopLevelDrawable(), imageInfo);
-            if (mSearchState == SearchState.HIDDEN) {
-              setNavigationIcon(mNavIconDrawable);
-            }
+            updateNavIcon();
           }
         }
       };
@@ -117,10 +122,12 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   private static class ActionIconControllerListener extends BaseControllerListener<ImageInfo> {
     private final MenuItem mItem;
     private final DraweeHolder mHolder;
+    private final ReactToolbar mToolbar;
 
-    ActionIconControllerListener(MenuItem item, DraweeHolder holder) {
+    ActionIconControllerListener(MenuItem item, DraweeHolder holder, ReactToolbar toolbar) {
       mItem = item;
       mHolder = holder;
+      mToolbar = toolbar;
     }
 
     @Override
@@ -129,17 +136,20 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
         @Nullable ImageInfo imageInfo,
         @Nullable Animatable animatable) {
       if (imageInfo != null) {
-        mItem.setIcon(new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), imageInfo));
+        Drawable icon = new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), imageInfo);
+        icon.setColorFilter(mToolbar.getNavTintColor(), PorterDuff.Mode.SRC_IN);
+        mItem.setIcon(icon);
       }
     }
   }
 
-  public ReactToolbar(Context context) {
+  public ReactToolbar(Context context, int defaultTintColor) {
     super(context);
 
     mLogoHolder = DraweeHolder.create(createDraweeHierarchy(), context);
     mNavIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
     mOverflowIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
+    mNavTintColor = defaultTintColor;
   }
 
   private final Runnable mLayoutRunnable = new Runnable() {
@@ -230,9 +240,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
       mNavIconDrawable = getDrawableByName(uri);
     }
 
-    if (mSearchState == SearchState.HIDDEN) {
-      setNavigationIcon(mNavIconDrawable);
-    }
+    updateNavIcon();
   }
 
   /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
@@ -290,6 +298,48 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
         }
       }
     }
+
+    updateMenuItemColor();
+  }
+
+  public void setNavTintColor(int color) {
+    Log.e(LOG_TAG, "setting nav tint color: " + Integer.toHexString(color));
+    mNavTintColor = color;
+    updateNavIcon();
+    updateMenuItemColor();
+  }
+
+  public int getNavTintColor() {
+    return mNavTintColor;
+  }
+
+  private void updateNavIcon() {
+    Drawable icon = mNavIconOverride != null ? mNavIconOverride : mNavIconDrawable;
+    if (icon != null) {
+      icon.setColorFilter(mNavTintColor, PorterDuff.Mode.SRC_IN);
+      setNavigationIcon(icon);
+    }
+  }
+
+  private void updateMenuItemColor() {
+    Menu menu = getMenu();
+
+    for (int i = 0; i < menu.size(); i++) {
+      MenuItem item = menu.getItem(i);
+
+      String title = item.getTitle().toString();
+      ArrayList<View> items = new ArrayList<View>();
+      findViewsWithText(items, title, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+      if (items.size() > 0) {
+        ((TextView)items.get(0)).setTextColor(mNavTintColor);
+      }
+
+      Drawable icon = item.getIcon();
+      if (icon != null) {
+        icon.setColorFilter(mNavTintColor, PorterDuff.Mode.SRC_IN);
+        item.setIcon(icon);
+      }
+    }
   }
 
   /**
@@ -304,7 +354,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
         DraweeHolder.create(createDraweeHierarchy(), getContext());
     DraweeController controller = Fresco.newDraweeControllerBuilder()
         .setUri(Uri.parse(iconSource))
-        .setControllerListener(new ActionIconControllerListener(item, holder))
+        .setControllerListener(new ActionIconControllerListener(item, holder, this))
         .setOldController(holder.getController())
         .build();
     holder.setController(controller);
@@ -342,18 +392,29 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     }
   }
 
+  private Drawable getDrawableFromId(int id) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      return getResources().getDrawable(id, getContext().getTheme());
+    }
+    else {
+      return getResources().getDrawable(id);
+    }
+  }
+
   private void setSearchState(SearchState state) {
 
     switch (state) {
       case HIDDEN:
-        if (mSearchState != SearchState.HIDDEN) {
+          if (mSearchState != SearchState.HIDDEN) {
           hideKeyboard();
-          setNavigationIcon(mNavIconDrawable);
+          mNavIconOverride = null;
+          updateNavIcon();
         }
         break;
 
       case VISIBLE_FOCUSED:
-        setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        mNavIconOverride = getDrawableFromId(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        updateNavIcon();
         break;
 
       case VISIBLE_NOT_FOCUSED:
