@@ -50,7 +50,8 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @Override
   protected ReactToolbar createViewInstance(ThemedReactContext reactContext) {
-    return new ReactToolbar(reactContext);
+    int[] defaultColors = getDefaultColors(reactContext);
+    return new ReactToolbar(reactContext, defaultColors[1]);
   }
 
   @ReactProp(name = "logo")
@@ -85,6 +86,17 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
       view.setSubtitleTextColor(subtitleColor);
     } else {
       view.setSubtitleTextColor(defaultColors[1]);
+    }
+  }
+
+  @ReactProp(name = "navTintColor", customType = "Color")
+  public void setNavTintColor(ReactToolbar view, @Nullable Integer tintColor){
+    int[] defaultColors = getDefaultColors(view.getContext());
+    if (tintColor != null) {
+      view.setNavTintColor(tintColor);
+    } else {
+      // Default to same color as title text
+      view.setNavTintColor(defaultColors[1]);
     }
   }
 
