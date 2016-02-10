@@ -161,7 +161,8 @@ var ToolbarAndroid = React.createClass({
     testID: ReactPropTypes.string,
     searchText: ReactPropTypes.string,
     searchPrompt: ReactPropTypes.string,
-    searchPlaceholder: ReactPropTypes.string
+    searchPlaceholder: ReactPropTypes.string,
+    navTintColor: ColorPropType
   },
 
   hideSearch: function() {
