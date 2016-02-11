@@ -11,6 +11,7 @@ package com.facebook.react.views.viewpager;
 
 import java.util.Map;
 
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.infer.annotation.Assertions;
@@ -41,6 +42,11 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   @Override
   protected ReactViewPager createViewInstance(ThemedReactContext reactContext) {
     return new ReactViewPager(reactContext);
+  }
+
+  @ReactProp(name = "enabled", defaultBoolean = true)
+  public void setContentInsetStart(ReactViewPager view, boolean enabled) {
+    view.setSwipeEnabled(enabled);
   }
 
   @Override
