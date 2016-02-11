@@ -95,7 +95,7 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
-    enabled: ReactPropTypes.boolean
+    enabled: ReactPropTypes.bool
   },
 
   componentDidMount: function() {
