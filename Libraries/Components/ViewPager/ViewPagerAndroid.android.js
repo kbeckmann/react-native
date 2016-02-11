@@ -113,6 +113,7 @@ var ViewPagerAndroid = React.createClass({
       'none', // default
       'on-drag',
     ]),
+    enabled: ReactPropTypes.bool
   },
 
   componentDidMount: function() {
@@ -206,6 +207,7 @@ var ViewPagerAndroid = React.createClass({
       <NativeAndroidViewPager
         ref={VIEWPAGER_REF}
         style={this.props.style}
+        enabled={this.props.enabled}
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}

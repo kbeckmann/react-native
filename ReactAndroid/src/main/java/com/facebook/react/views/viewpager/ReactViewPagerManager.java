@@ -11,6 +11,7 @@ package com.facebook.react.views.viewpager;
 
 import java.util.Map;
 
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.infer.annotation.Assertions;
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 import javax.annotation.Nullable;
 
@@ -39,6 +41,11 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   @Override
   protected ReactViewPager createViewInstance(ThemedReactContext reactContext) {
     return new ReactViewPager(reactContext);
+  }
+
+  @ReactProp(name = "enabled", defaultBoolean = true)
+  public void setContentInsetStart(ReactViewPager view, boolean enabled) {
+    view.setSwipeEnabled(enabled);
   }
 
   @Override
