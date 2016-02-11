@@ -110,6 +110,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   private final EventDispatcher mEventDispatcher;
   private boolean mIsCurrentItemFromJs;
+  private boolean mCanSwipe = true;
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
@@ -124,11 +125,28 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     return (Adapter) super.getAdapter();
   }
 
+  public void setSwipeEnabled(boolean enabled) {
+    mCanSwipe = enabled;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    boolean ret = false;
+
+    if (mCanSwipe) {
+      ret = super.onTouchEvent(event);
+    }
+
+    return ret;
+  }
+
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      return true;
+    if (mCanSwipe) {
+      if (super.onInterceptTouchEvent(ev)) {
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        return true;
+      }
     }
     return false;
   }
