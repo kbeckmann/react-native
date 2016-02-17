@@ -38,4 +38,7 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onLeftButtonPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onRightButtonPress;
 
+@property (nonatomic, copy) NSString *subtitle;
+@property (nonatomic, strong) UIView *titleView;
+
 @end

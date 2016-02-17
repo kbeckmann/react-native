@@ -123,10 +123,20 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
 
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
-    item.titleView = _navItem.titleImageView;
+    item.prompt = _navItem.subtitle;
+    item.titleView = _navItem.titleView;
     item.backBarButtonItem = _navItem.backButtonItem;
     item.leftBarButtonItem = _navItem.leftButtonItem;
     item.rightBarButtonItem = _navItem.rightButtonItem;
+
+    // If navItem has a second child it is the title view (set from navigator JS)
+    NSArray<UIView*> *views = [_navItem subviews];
+    if ([views count] == 2) {
+      UIView *title = views[1];
+      [title removeFromSuperview];
+      item.titleView = title;
+      _navItem.titleView = title;
+    }
   }
 }
 
