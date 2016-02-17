@@ -888,6 +888,7 @@ var NavigatorIOS = React.createClass({
             route={route}
             {...passProps}
           />
+          {route.titleView}
         </RCTNavigatorItem>
       </StaticContainer>
     );
