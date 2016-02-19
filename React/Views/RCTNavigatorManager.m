@@ -34,7 +34,8 @@ RCT_EXPORT_VIEW_PROPERTY(onSearchCancelled, RCTDirectEventBlock)
 RCT_EXPORT_METHOD(showSearch:(nonnull NSNumber *)reactTag
                       prompt:(NSString *)prompt
                  placeholder:(NSString *)placeholder
-                        text:(NSString *)text)
+                        text:(NSString *)text
+                     focused:(BOOL)focused)
 {
   [self.bridge.uiManager addUIBlock:
    ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTNavigator *> *viewRegistry){
@@ -43,6 +44,7 @@ RCT_EXPORT_METHOD(showSearch:(nonnull NSNumber *)reactTag
        [navigator showSearch:prompt
                  placeholder:placeholder
                         text:text
+                     focused:focused
         ];
      }
    }];
