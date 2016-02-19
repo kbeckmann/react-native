@@ -389,9 +389,10 @@ var NavigatorIOS = React.createClass({
   },
 
   navigator: (undefined: ?Object),
-  navigationContext: new NavigationContext(),
 
   componentWillMount: function() {
+    this.__defineGetter__('navigationContext', this._getNavigationContext);
+
     // Precompute a pack of callbacks that's frequently generated and passed to
     // instances.
     this.navigator = {
@@ -414,8 +415,15 @@ var NavigatorIOS = React.createClass({
   },
 
   componentWillUnmount: function() {
-    this.navigationContext.dispose();
-    this.navigationContext = new NavigationContext();
+    this._navigationContext.dispose();
+    this._navigationContext = null;
+  },
+
+  _getNavigationContext: function() {
+    if (!this._navigationContext) {
+      this._navigationContext = new NavigationContext();
+    }
+    return this._navigationContext;
   },
 
   getDefaultProps: function(): Object {
