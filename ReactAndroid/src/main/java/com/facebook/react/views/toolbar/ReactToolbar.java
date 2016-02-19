@@ -420,6 +420,13 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     }
   }
 
+  public void showSearch() {
+    Log.d(LOG_TAG, "Show search");
+    if (mSearchState == SearchState.HIDDEN) {
+      setSearchState(SearchState.VISIBLE_NOT_FOCUSED);
+    }
+  }
+
   public void hideSearch() {
     Log.d(LOG_TAG, "Hide search");
     setSearchState(SearchState.HIDDEN);
@@ -445,7 +452,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
 
     switch (state) {
       case HIDDEN:
-          if (mSearchState != SearchState.HIDDEN) {
+        if (mSearchState != SearchState.HIDDEN) {
           hideKeyboard();
           mNavIconOverride = null;
           updateNavIcon();
@@ -458,8 +465,15 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
         break;
 
       case VISIBLE_NOT_FOCUSED:
-        if (mSearchState == SearchState.VISIBLE_FOCUSED) {
-          hideKeyboard();
+        switch (mSearchState) {
+          case VISIBLE_FOCUSED:
+            hideKeyboard();
+            break;
+
+          case HIDDEN:
+            mSearch.setIconified(false);
+            mSearch.clearFocus();
+            break;
         }
         break;
     }
@@ -478,7 +492,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   }
 
   public void setSearchText(@Nullable String text) {
-      if (mSearch != null) {
+    if (mSearch != null) {
       mSearch.setQuery(text, false);
     }
   }
@@ -494,7 +508,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     else {
       onClose();
 
-      //setIconified doesnt work unless the searchview is cleared and unfocused
+      //setIconified(true) doesnt work unless the searchview is cleared and unfocused
       mSearch.setQuery(null, false);
       mSearch.clearFocus();
       mSearch.setIconified(true);

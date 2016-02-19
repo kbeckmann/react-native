@@ -41,6 +41,7 @@ import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   private static final int HIDE_SEARCH = 0;
+  private static final int SHOW_SEARCH = 1;
   private static final String REACT_CLASS = "ToolbarAndroid";
 
   @Override
@@ -189,7 +190,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("hideSearch", HIDE_SEARCH);
+    return MapBuilder.of("showSearch", SHOW_SEARCH, "hideSearch", HIDE_SEARCH);
   }
 
   @Override
@@ -201,6 +202,9 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     switch (commandId) {
       case HIDE_SEARCH:
         root.hideSearch();
+        break;
+      case SHOW_SEARCH:
+        root.showSearch();
         break;
     }
   }

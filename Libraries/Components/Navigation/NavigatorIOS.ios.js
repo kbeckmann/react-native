@@ -64,6 +64,7 @@ class NavigatorTransitionerIOS extends React.Component {
       data.prompt,
       data.placeholder,
       data.text,
+      data.focused
     );
 
   }
@@ -78,7 +79,7 @@ class NavigatorTransitionerIOS extends React.Component {
     });
 
     RCTNavigatorManager.hideSearch(
-      React.findNodeHandle(this),
+      React.findNodeHandle(this)
     );
 
   }
