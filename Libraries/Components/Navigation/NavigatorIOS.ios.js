@@ -64,6 +64,7 @@ var NavigatorTransitionerIOS = React.createClass({
       data.prompt,
       data.placeholder,
       data.text,
+      data.focused
     );
 
   },
@@ -78,7 +79,7 @@ var NavigatorTransitionerIOS = React.createClass({
     });
 
     RCTNavigatorManager.hideSearch(
-      React.findNodeHandle(this),
+      React.findNodeHandle(this)
     );
 
   },
