@@ -33,7 +33,8 @@
 
 - (void)showSearch:(NSString *)prompt
        placeholder:(NSString *)placeholder
-              text:(NSString *)text;
+              text:(NSString *)text
+           focused:(bool)focused;
 
 - (void)hideSearch;
 

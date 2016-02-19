@@ -165,6 +165,14 @@ var ToolbarAndroid = React.createClass({
     navTintColor: ColorPropType
   },
 
+  showSearch: function() {
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this.refs.toolbar),
+      UIManager.ToolbarAndroid.Commands.showSearch,
+      null
+    );
+  },
+
   hideSearch: function() {
     UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this.refs.toolbar),

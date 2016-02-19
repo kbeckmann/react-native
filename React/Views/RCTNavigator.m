@@ -341,6 +341,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)showSearch:(NSString *)prompt
        placeholder:(NSString *)placeholder
               text:(NSString *)text
+           focused:(bool)focused
 {
   _searchBar = [UISearchBar new];
   [_searchBar sizeToFit];
@@ -352,18 +353,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _searchBar.showsCancelButton = YES;
   
   [_navigationController.navigationBar addSubview:_searchBar];
-  [_searchBar becomeFirstResponder];
+  if (focused) {
+    [_searchBar becomeFirstResponder];
+  }
 
   // Hack for hiding the right navbar button, it is displayed overlapping the "Cancel" label otherwise
-  UIViewController *topView = [_navigationController topViewController];
-  if ([topView isKindOfClass:[RCTWrapperViewController class]]) {
-    RCTWrapperViewController *ctrl = (RCTWrapperViewController *)topView;
-    RCTNavItem *item = [ctrl navItem];
-    if (item.rightButtonItem) {
-      _buttonTintColor = item.rightButtonItem.tintColor;
-      [item.rightButtonItem setTintColor:[UIColor clearColor]];
-      [item.rightButtonItem setEnabled:NO];
-    }
+  RCTNavItem *topItem = self.reactSubviews[_requestedTopOfStack];
+  if (topItem.rightButtonItem) {
+    _buttonTintColor = topItem.rightButtonItem.tintColor;
+    [topItem.rightButtonItem setTintColor:[UIColor clearColor]];
+    [topItem.rightButtonItem setEnabled:NO];
   }
 }
 
@@ -373,15 +372,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _searchBar = nil; // Release reference for garbage collection
 
   // Show navbar button again
-  UIViewController *topView = [_navigationController topViewController];
-  if ([topView isKindOfClass:[RCTWrapperViewController class]]) {
-    RCTWrapperViewController *ctrl = (RCTWrapperViewController *)topView;
-    RCTNavItem *item = [ctrl navItem];
-    if (item.rightButtonItem) {
-      [item.rightButtonItem setTintColor:_buttonTintColor];
-      _buttonTintColor = nil;
-      [item.rightButtonItem setEnabled:YES];
-    }
+  RCTNavItem *topItem = self.reactSubviews[_requestedTopOfStack];
+  if (topItem.rightButtonItem) {
+    [topItem.rightButtonItem setTintColor:_buttonTintColor];
+    _buttonTintColor = nil;
+    [topItem.rightButtonItem setEnabled:YES];
   }
 }
 
