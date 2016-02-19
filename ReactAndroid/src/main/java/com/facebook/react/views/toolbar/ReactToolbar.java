@@ -78,6 +78,8 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   private SearchState mSearchState = SearchState.HIDDEN;
   private SearchView mSearch = null;
   private MenuItem mSearchMenuItem = null;
+  private String mSearchText = null;
+  private String mSearchPlaceholder = null;
 
   private Drawable mNavIconDrawable = null;
   private Drawable mNavIconOverride = null;
@@ -452,12 +454,15 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
           hideKeyboard();
           mNavIconOverride = null;
           updateNavIcon();
+          mSearchText = mSearch.getQuery().toString();
         }
         break;
 
       case VISIBLE_FOCUSED:
         mNavIconOverride = getDrawableFromId(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
         updateNavIcon();
+        mSearch.setQuery(mSearchText, false);
+        mSearch.setQueryHint(mSearchPlaceholder);
         break;
 
       case VISIBLE_NOT_FOCUSED:
@@ -469,6 +474,8 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
           case HIDDEN:
             mSearch.setIconified(false);
             mSearch.clearFocus();
+            mSearch.setQuery(mSearchText, false);
+            mSearch.setQueryHint(mSearchPlaceholder);
             break;
         }
         break;
@@ -484,12 +491,14 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   public void setSearchPlaceholder(@Nullable String placeholder) {
     if (mSearch != null) {
       mSearch.setQueryHint(placeholder);
+      mSearchPlaceholder = placeholder;
     }
   }
 
   public void setSearchText(@Nullable String text) {
     if (mSearch != null) {
       mSearch.setQuery(text, false);
+      mSearchText = text;
     }
   }
 
