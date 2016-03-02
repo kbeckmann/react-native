@@ -191,7 +191,7 @@ NSInteger kNeverProgressed = -10000;
 
 @end
 
-@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate, UISearchBarDelegate>
+@interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate, UISearchBarDelegate, UIGestureRecognizerDelegate >
 
 @property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
 @property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
@@ -505,6 +505,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _navigationController.view.frame = self.bounds;
 }
 
+// For some reason this needs to be set after the navigator is linked into the tree
+- (void)didMoveToSuperview
+{
+  _navigationController.interactivePopGestureRecognizer.enabled = YES;
+  _navigationController.interactivePopGestureRecognizer.delegate = self;
+}
+
 - (void)removeReactSubview:(RCTNavItem *)subview
 {
   if (_currentViews.count <= 0 || subview == _currentViews[0]) {
@@ -654,6 +661,18 @@ didMoveToNavigationController:(UINavigationController *)navigationController
   if (_numberOfViewControllerMovesToIgnore == 0) {
     [self handleTopOfStackChanged];
     [self freeLock];
+  }
+}
+
+// Block swipe back if NavigatorIOS.js has the lock, if not aquire the lock for native
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  if (_navigationController.navigationLock != RCTNavigationLockJavaScript) {
+    _navigationController.navigationLock = RCTNavigationLockNative;
+    return YES;
+  }
+  else {
+    return NO;
   }
 }
 
