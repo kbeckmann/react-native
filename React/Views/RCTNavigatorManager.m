@@ -31,6 +31,7 @@ RCT_EXPORT_VIEW_PROPERTY(onNavigationComplete, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSearchText, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSearchPressed, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSearchCancelled, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(backGestureEnabled, BOOL)
 
 RCT_EXPORT_METHOD(showSearch:(nonnull NSNumber *)reactTag
                       prompt:(NSString *)prompt
