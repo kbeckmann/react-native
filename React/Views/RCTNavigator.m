@@ -171,6 +171,7 @@ NSInteger kNeverProgressed = -10000;
 {
   if (self.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
     if (self.navigationLock == RCTNavigationLockNone) {
+      NSLog(@"Navigator - shouldPopItem lock native");
       self.navigationLock = RCTNavigationLockNative;
       if (_scrollCallback) {
         _scrollCallback();
@@ -184,6 +185,7 @@ NSInteger kNeverProgressed = -10000;
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
+      NSLog(@"Navigator - shouldPopItem lock native");
       self.navigationLock = RCTNavigationLockNative;
       if (_scrollCallback) {
         _scrollCallback();
@@ -436,9 +438,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _navigationController;
 }
 
+// Block swipe back if NavigatorIOS.js has the lock, if not aquire the lock for native
 - (BOOL)gestureRecognizerShouldBegin:(__unused UIGestureRecognizer *)gestureRecognizer
 {
-  return _navigationController.viewControllers.count > 1;
+  if (_navigationController.navigationLock != RCTNavigationLockJavaScript && _backGestureEnabled) {
+    _navigationController.navigationLock = RCTNavigationLockNative;
+    NSLog(@"Navigator - gestureRecognizerShouldBegin lock native");
+    return _navigationController.viewControllers.count > 1;
+  }
+  else {
+    return NO;
+  }
 }
 
 /**
@@ -475,6 +485,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
+    NSLog(@"Navigator - transition completed releasing lock");
     [weakSelf freeLock];
     self->_currentlyTransitioningFrom = 0;
     self->_currentlyTransitioningTo = 0;
@@ -487,6 +498,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)requestSchedulingJavaScriptNavigation
 {
   if (_navigationController.navigationLock == RCTNavigationLockNone) {
+    NSLog(@"Navigator - requestSchedulingJavaScriptNavigation lock JS");
+
     _navigationController.navigationLock = RCTNavigationLockJavaScript;
     _navigationController.interactivePopGestureRecognizer.enabled = NO;
     return YES;
@@ -529,6 +542,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super layoutSubviews];
   [self reactAddControllerToClosestParent:_navigationController];
   _navigationController.view.frame = self.bounds;
+}
+
+// For some reason this needs to be set after the navigator is linked into the tree
+- (void)didMoveToSuperview
+{
+  _navigationController.interactivePopGestureRecognizer.enabled = YES;
+  _navigationController.interactivePopGestureRecognizer.delegate = self;
 }
 
 - (void)removeReactSubview:(RCTNavItem *)subview
@@ -639,6 +659,7 @@ BOOL jsGettingtooSlow =
       RCTLogError(@"Pushing or popping more than one view at a time from JS");
     }
   } else if (jsCatchingUp) {
+    NSLog(@"Navigator - reactBridgeDidFinishTransaction releasing lock");
     [self freeLock]; // Nothing to push/pop
   } else {
     // Else, JS making no progress, could have been unrelated to anything nav.
@@ -677,6 +698,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
   }
   if (_numberOfViewControllerMovesToIgnore == 0) {
     [self handleTopOfStackChanged];
+    NSLog(@"Navigator - didMoveToNavigationController releasing lock");
     [self freeLock];
   }
 }
