@@ -37,4 +37,6 @@
 
 - (void)hideSearch;
 
+- (void)didMoveToSuperview;
+
 @end
