@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -92,7 +93,6 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   private abstract class IconControllerListener extends BaseControllerListener<ImageInfo> {
 
     private final DraweeHolder mHolder;
-    private final ReactToolbar mToolbar;
 
     private IconImageInfo mIconImageInfo;
 
@@ -118,6 +118,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
 
   private class ActionIconControllerListener extends IconControllerListener {
     private final MenuItem mItem;
+    private final ReactToolbar mToolbar;
 
     ActionIconControllerListener(MenuItem item, DraweeHolder holder, ReactToolbar toolbar) {
       super(holder);
@@ -179,9 +180,8 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     mNavIconControllerListener = new IconControllerListener(mNavIconHolder) {
       @Override
       protected void setDrawable(Drawable d) {
-        if (mSearchState == SearchState.HIDDEN) {
-          setNavigationIcon(mNavIconDrawable);
-        }
+        mNavIconDrawable = d;
+        updateNavIcon();
       }
     };
 
@@ -257,8 +257,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
   }
 
   /* package */ void setNavIconSource(@Nullable ReadableMap source) {
-    mNavIconDrawable = setIconSource(source, mNavIconControllerListener, mNavIconHolder);
-    updateNavIcon();
+      setIconSource(source, mNavIconControllerListener, mNavIconHolder);
   }
 
   /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
@@ -361,10 +360,9 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
    * to be somewhere remote (http/https) or on the local filesystem, it uses fresco to load it.
    * Otherwise it loads the Drawable from the Resources and directly returns it via a callback
    */
-  private Drawable setIconSource(ReadableMap source, IconControllerListener controllerListener, DraweeHolder holder) {
+  private void setIconSource(ReadableMap source, IconControllerListener controllerListener, DraweeHolder holder) {
 
     String uri = source != null ? source.getString(PROP_ICON_URI) : null;
-    Drawable res = null;
 
     if (uri == null) {
       controllerListener.setIconImageInfo(null);
@@ -378,11 +376,9 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
               .build();
       holder.setController(controller);
     } else {
-      res = getDrawableByName(uri);
-      controllerListener.setDrawable(res);
+      controllerListener.setDrawable(getDrawableByName(uri));
     }
 
-    return res;
   }
 
   private GenericDraweeHierarchy createDraweeHierarchy() {
