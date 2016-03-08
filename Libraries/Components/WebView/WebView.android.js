@@ -42,6 +42,7 @@ var WebView = React.createClass({
     ...View.propTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
+    blockedPrefixes: PropTypes.arrayOf(PropTypes.string),
     onLoad: PropTypes.func,
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
@@ -186,7 +187,7 @@ var WebView = React.createClass({
     } else if (this.props.url) {
       source.uri = this.props.url;
     }
-    
+
     if (source.method === 'POST' && source.headers) {
       console.warn('WebView: `source.headers` is not supported when using POST.');
     } else if (source.method === 'GET' && source.body) {
@@ -205,6 +206,8 @@ var WebView = React.createClass({
         domStorageEnabled={domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        blockedPrefixes={this.blockedPrefixes}
+        onPrefixBlocked={this.onPrefixBlocked}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
