@@ -51,6 +51,7 @@ class WebView extends React.Component {
     ...View.propTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
+    blockedPrefixes: PropTypes.arrayOf(PropTypes.string),
     onLoad: PropTypes.func,
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
@@ -220,6 +221,8 @@ class WebView extends React.Component {
         domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        blockedPrefixes={this.blockedPrefixes}
+        onPrefixBlocked={this.onPrefixBlocked}
         onContentSizeChange={this.props.onContentSizeChange}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
