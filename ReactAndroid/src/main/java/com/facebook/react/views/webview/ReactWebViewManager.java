@@ -22,10 +22,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 
+import com.facebook.react.views.webview.events.TopPrefixBlockedEvent;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -173,6 +175,26 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       event.putBoolean("canGoForward", webView.canGoForward());
       return event;
     }
+
+    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+      ReactWebView reactWebView = (ReactWebView) webView;
+      ReadableArray blockedPrefixes = reactWebView.getBlockedPrefixes();
+      if (blockedPrefixes != null) {
+        // Look if a prefix matches the url
+        // and call the callback there is one registered.
+        for (int i = 0; i < blockedPrefixes.size(); i++) {
+          String prefix = blockedPrefixes.getString(i);
+          if (url.startsWith(prefix)) {
+            WritableMap eventData = createWebViewEvent(webView, url);
+            dispatchEvent(
+                webView,
+                new TopPrefixBlockedEvent(webView.getId(), SystemClock.currentTimeMillis(), eventData));
+            return true;
+          }
+        }
+      }
+      return false;
+    }
   }
 
   /**
@@ -181,6 +203,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private @Nullable ReadableArray blockedPrefixes;
 
     /**
      * WebView must be created with an context of the current activity
@@ -210,6 +233,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setInjectedJavaScript(@Nullable String js) {
       injectedJS = js;
+    }
+
+    public void setBlockedPrefixes(@Nullable ReadableArray prefixes) {
+      blockedPrefixes = prefixes;
+    }
+
+    public ReadableArray getBlockedPrefixes() {
+      return blockedPrefixes;
     }
 
     public void callInjectedJavaScript() {
@@ -290,6 +321,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "injectedJavaScript")
   public void setInjectedJavaScript(WebView view, @Nullable String injectedJavaScript) {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
+  }
+
+  @ReactProp(name = "blockedPrefixes")
+  public void setBlockedPrefixes(WebView view, @Nullable ReadableArray prefixes) {
+    ((ReactWebView) view).setBlockedPrefixes(prefixes);
   }
 
   @ReactProp(name = "source")
