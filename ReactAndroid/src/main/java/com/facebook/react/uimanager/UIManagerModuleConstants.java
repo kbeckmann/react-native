@@ -77,6 +77,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .put("topLoadingFinish", MapBuilder.of("registrationName", "onLoadingFinish"))
         .put("topLoadingStart", MapBuilder.of("registrationName", "onLoadingStart"))
         .put("topSelectionChange", MapBuilder.of("registrationName", "onSelectionChange"))
+        .put("topPrefixBlocked", MapBuilder.of("registrationName", "onPrefixBlocked"))
         .put("topSearchCancelled", MapBuilder.of("registrationName", "onSearchCancelled"))
         .put("topSearchPressed", MapBuilder.of("registrationName", "onSearchPressed"))
         .put("topSearchText", MapBuilder.of("registrationName", "onSearchText"))
