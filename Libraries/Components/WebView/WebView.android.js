@@ -52,6 +52,7 @@ var WebView = React.createClass({
     ...View.propTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
+    blockedPrefixes: PropTypes.arrayOf(PropTypes.string),
     onLoad: PropTypes.func,
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
@@ -224,6 +225,8 @@ var WebView = React.createClass({
         domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        blockedPrefixes={this.blockedPrefixes}
+        onPrefixBlocked={this.onPrefixBlocked}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
