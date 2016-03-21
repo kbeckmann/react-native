@@ -20,6 +20,7 @@ case "$CONFIGURATION" in
     fi
 
     DEV=true
+    exit 0
     ;;
   "")
     echo "$0 must be invoked by Xcode"
