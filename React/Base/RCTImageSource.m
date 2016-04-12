@@ -18,12 +18,13 @@
 
 @implementation RCTImageSource
 
-- (instancetype)initWithURL:(NSURL *)url size:(CGSize)size scale:(CGFloat)scale
+- (instancetype)initWithURL:(NSURL *)url size:(CGSize)size scale:(CGFloat)scale headers:(NSDictionary *)headers
 {
   if ((self = [super init])) {
     _imageURL  = url;
     _size = size;
     _scale = scale;
+    _headers = [[NSDictionary alloc] initWithDictionary:headers copyItems:YES];
   }
   return self;
 }
@@ -32,7 +33,8 @@
 {
   RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:_imageURL
                                                                size:size
-                                                              scale:scale];
+                                                              scale:scale
+                                                            headers:_headers];
   imageSource.packagerAsset = _packagerAsset;
   return imageSource;
 }
@@ -74,9 +76,11 @@
     return nil;
   }
 
+  NSDictionary *headers = json[@"headers"];
   RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:imageURL
                                                                size:size
-                                                              scale:scale];
+                                                              scale:scale
+                                                            headers:headers];
   imageSource.packagerAsset = packagerAsset;
   return imageSource;
 }

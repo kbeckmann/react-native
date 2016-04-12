@@ -199,6 +199,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                            size:CGSizeZero
                           scale:1
                      resizeMode:RCTResizeModeStretch
+                        headers:nil
                   progressBlock:nil
                 completionBlock:callback];
 }
@@ -212,6 +213,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                      size:(CGSize)size
                                                     scale:(CGFloat)scale
                                                resizeMode:(RCTResizeMode)resizeMode
+                                                  headers:(NSDictionary *)headers
                                             progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                           completionBlock:(void (^)(NSError *error, id imageOrData))completionBlock
 {
@@ -256,8 +258,19 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       return;
     }
 
+    // Use headers if they are provided
+    NSURLRequest *request;
+    if (headers) {
+      NSDictionary *headersCopy = [RCTConvert NSDictionary:headers];
+      NSDictionary *urlDict = @{@"url"     : imageTag,
+                                @"headers" : headersCopy};
+      request = [RCTConvert NSURLRequest:urlDict];
+    }
+    else {
+      request = [RCTConvert NSURLRequest:imageTag];
+    }
+    
     // Find suitable image URL loader
-    NSURLRequest *request = [RCTConvert NSURLRequest:imageTag];
     id<RCTImageURLLoader> loadHandler = [strongSelf imageURLLoaderForURL:request.URL];
     if (loadHandler) {
       cancelLoad = [loadHandler loadImageForURL:request.URL
@@ -372,6 +385,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
+                                            headers:(NSDictionary *)headers
                                       progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
@@ -379,6 +393,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                    size:size
                                   scale:scale
                              resizeMode:resizeMode
+                                headers:headers
                           progressBlock:progressHandler
                         completionBlock:^(NSError *error, UIImage *image) {
                           completionBlock(error, RCTResizeImageIfNeeded(image, size, scale, resizeMode));
@@ -389,6 +404,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                        size:(CGSize)size
                                                       scale:(CGFloat)scale
                                                  resizeMode:(RCTResizeMode)resizeMode
+                                                    headers:(NSDictionary *)headers
                                               progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                             completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
@@ -414,6 +430,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                        size:size
                                       scale:scale
                                  resizeMode:resizeMode
+                                    headers:headers
                               progressBlock:progressHandler
                             completionBlock:completionHandler] ?: ^{};
   return ^{
@@ -523,6 +540,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                  size:CGSizeZero
                                 scale:1
                            resizeMode:RCTResizeModeStretch
+                              headers:nil
                         progressBlock:nil
                       completionBlock:^(NSError *error, id imageOrData) {
                         CGSize size;

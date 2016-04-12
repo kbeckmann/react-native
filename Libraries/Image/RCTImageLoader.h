@@ -42,6 +42,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
+                                            headers:(NSDictionary*)headers
                                       progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
@@ -52,6 +53,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                                        size:(CGSize)size
                                                       scale:(CGFloat)scale
                                                  resizeMode:(RCTResizeMode)resizeMode
+                                                    headers:(NSDictionary*)headers
                                               progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                             completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
@@ -108,6 +110,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
+                                        //   headers:(NSDictionary *)headers
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
