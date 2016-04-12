@@ -45,6 +45,17 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                             headers:(NSDictionary*)headers
                                       progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+/**
+ * As above, but includes target size, scale and resizeMode, which are used to
+ * select the optimal dimensions for the loaded image.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(RCTResizeMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
 
 /**
  * Loads an image without clipping the result to fit - used by RCTImageView.
