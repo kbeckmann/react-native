@@ -461,6 +461,24 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         }];
 }
 
+- (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
+                                               size:(CGSize)size
+                                              scale:(CGFloat)scale
+                                         resizeMode:(RCTResizeMode)resizeMode
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressHandler
+                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+{
+  return [self loadImageWithoutClipping:imageTag
+                                   size:size
+                                  scale:scale
+                             resizeMode:resizeMode
+                                headers:nil
+                          progressBlock:progressHandler
+                        completionBlock:^(NSError *error, UIImage *image) {
+                          completionBlock(error, RCTResizeImageIfNeeded(image, size, scale, resizeMode));
+                        }];
+}
+
 - (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
                                                        size:(CGSize)size
                                                       scale:(CGFloat)scale
