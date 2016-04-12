@@ -19,6 +19,7 @@
 @property (nonatomic, strong, readonly) NSURL *imageURL;
 @property (nonatomic, assign, readonly) CGSize size;
 @property (nonatomic, assign, readonly) CGFloat scale;
+@property (nonatomic, strong, readonly) NSDictionary *headers;
 
 /**
  * Create a new image source object.
@@ -27,7 +28,8 @@
  */
 - (instancetype)initWithURL:(NSURL *)url
                        size:(CGSize)size
-                      scale:(CGFloat)scale;
+                      scale:(CGFloat)scale
+                    headers:(NSDictionary *)headers;
 
 /**
  * Create a copy of the image source with the specified size and scale.

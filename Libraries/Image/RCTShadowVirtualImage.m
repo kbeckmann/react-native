@@ -61,6 +61,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
                                                         size:imageSize
                                                        scale:RCTScreenScale()
                                                   resizeMode:_resizeMode
+                                                     headers:nil
                                                progressBlock:nil
                                              completionBlock:^(NSError *error, UIImage *image) {
 

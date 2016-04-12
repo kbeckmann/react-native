@@ -206,6 +206,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                              size:imageSize
                                                                             scale:imageScale
                                                                        resizeMode:(RCTResizeMode)self.contentMode
+                                                                          headers:_source.headers
                                                                     progressBlock:progressHandler
                                                                   completionBlock:^(NSError *error, UIImage *image) {
       RCTImageView *strongSelf = weakSelf;
