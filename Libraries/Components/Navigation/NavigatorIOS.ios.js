@@ -768,7 +768,8 @@ var NavigatorIOS = React.createClass({
           style={styles.transitioner}
           vertical={this.props.vertical}
           requestedTopOfStack={this.state.requestedTopOfStack}
-          onNavigationComplete={this._handleNavigationComplete}>
+          onNavigationComplete={this.handleNavigationComplete}
+          backGestureEnabled={this.props.backGestureEnabled}>
           {items}
         </NavigatorTransitionerIOS>
       </StaticContainer>
