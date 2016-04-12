@@ -657,7 +657,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
 // Block swipe back if NavigatorIOS.js has the lock, if not aquire the lock for native
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-  if (_navigationController.navigationLock != RCTNavigationLockJavaScript) {
+  if (_navigationController.navigationLock != RCTNavigationLockJavaScript && _backGestureEnabled) {
     _navigationController.navigationLock = RCTNavigationLockNative;
     return YES;
   }
