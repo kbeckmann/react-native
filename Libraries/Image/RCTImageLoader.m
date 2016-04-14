@@ -750,6 +750,12 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
   }
 }
 
+RCT_EXPORT_METHOD(flushCache:(NSInteger)foo)
+{
+  [_URLCache removeAllCachedResponses];
+}
+
+
 @end
 
 @implementation RCTBridge (RCTImageLoader)
