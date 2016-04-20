@@ -157,6 +157,7 @@ NSInteger kNeverProgressed = -10000;
 {
   if (self.interactivePopGestureRecognizer.state == UIGestureRecognizerStateBegan) {
     if (self.navigationLock == RCTNavigationLockNone) {
+      NSLog(@"Navigator - shouldPopItem lock native");
       self.navigationLock = RCTNavigationLockNative;
       if (_scrollCallback) {
         _scrollCallback();
@@ -170,6 +171,7 @@ NSInteger kNeverProgressed = -10000;
     if (self.navigationLock == RCTNavigationLockNone) {
       // Must be coming from native interaction, lock it - it will be unlocked
       // in `didMoveToNavigationController`
+      NSLog(@"Navigator - shouldPopItem lock native");
       self.navigationLock = RCTNavigationLockNative;
       if (_scrollCallback) {
         _scrollCallback();
@@ -455,6 +457,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)requestSchedulingJavaScriptNavigation
 {
   if (_navigationController.navigationLock == RCTNavigationLockNone) {
+    NSLog(@"Navigator - requestSchedulingJavaScriptNavigation lock JS");
+
     _navigationController.navigationLock = RCTNavigationLockJavaScript;
     _navigationController.interactivePopGestureRecognizer.enabled = NO;
     return YES;
@@ -464,6 +468,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)freeLock
 {
+  NSLog(@"Navigator - freeLock releasing lock");
   _navigationController.navigationLock = RCTNavigationLockNone;
   _navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
@@ -659,7 +664,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
 {
   if (_navigationController.navigationLock != RCTNavigationLockJavaScript && _backGestureEnabled) {
     _navigationController.navigationLock = RCTNavigationLockNative;
-     NSLog(@"Navigator - aquire native lock from back gesture");
+     NSLog(@"Navigator - gestureRecognizerShouldBegin lock native");
     return YES;
   }
   else {
