@@ -659,6 +659,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
 {
   if (_navigationController.navigationLock != RCTNavigationLockJavaScript && _backGestureEnabled) {
     _navigationController.navigationLock = RCTNavigationLockNative;
+     NSLog(@"Navigator - aquire native lock from back gesture");
     return YES;
   }
   else {
