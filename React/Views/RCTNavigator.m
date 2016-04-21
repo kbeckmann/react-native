@@ -445,6 +445,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
+    NSLog(@"Navigator - transition completed releasing lock");
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
@@ -468,7 +469,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)freeLock
 {
-  NSLog(@"Navigator - freeLock releasing lock");
   _navigationController.navigationLock = RCTNavigationLockNone;
   _navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
@@ -617,6 +617,7 @@ BOOL jsGettingtooSlow =
       RCTLogError(@"Pushing or popping more than one view at a time from JS");
     }
   } else if (jsCatchingUp) {
+    NSLog(@"Navigator - reactBridgeDidFinishTransaction releasing lock");
     [self freeLock]; // Nothing to push/pop
   } else {
     // Else, JS making no progress, could have been unrelated to anything nav.
@@ -655,6 +656,7 @@ didMoveToNavigationController:(UINavigationController *)navigationController
   }
   if (_numberOfViewControllerMovesToIgnore == 0) {
     [self handleTopOfStackChanged];
+    NSLog(@"Navigator - didMoveToNavigationController releasing lock");
     [self freeLock];
   }
 }
