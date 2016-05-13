@@ -567,38 +567,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var validAttributes = {
-  ...ReactNativeViewAttributes.UIView,
-  alwaysBounceHorizontal: true,
-  alwaysBounceVertical: true,
-  automaticallyAdjustContentInsets: true,
-  bounces: true,
-  centerContent: true,
-  contentInset: {diff: insetsDiffer},
-  contentOffset: {diff: pointsDiffer},
-  decelerationRate: true,
-  horizontal: true,
-  indicatorStyle: true,
-  keyboardDismissMode: true,
-  keyboardShouldPersistTaps: true,
-  maximumZoomScale: true,
-  minimumZoomScale: true,
-  pagingEnabled: true,
-  removeClippedSubviews: true,
-  scrollEnabled: true,
-  scrollIndicatorInsets: {diff: insetsDiffer},
-  scrollsToTop: true,
-  setVerticalScrollbarPositionOnLeftSide: true,
-  showsHorizontalScrollIndicator: true,
-  showsVerticalScrollIndicator: true,
-  setVerticalScrollbarPositionOnLeftSide: true,
-  snapToInterval: true,
-  snapToAlignment: true,
-  stickyHeaderIndices: {diff: deepDiffer},
-  scrollEventThrottle: true,
-  zoomScale: true,
-};
-
 if (Platform.OS === 'android') {
   var nativeOnlyProps = { nativeOnly : { 'sendMomentumEvents' : true } };
   var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
