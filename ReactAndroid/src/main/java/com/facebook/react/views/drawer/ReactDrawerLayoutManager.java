@@ -116,6 +116,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
             ex);
       }
     }
+  }
 
   @Override
   public boolean needsCustomLayoutForChildren() {
