@@ -22,10 +22,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 
-import com.facebook.catalyst.views.webview.events.TopPrefixBlockedEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopPrefixBlockedEvent;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -187,7 +187,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             WritableMap eventData = createWebViewEvent(webView, url);
             dispatchEvent(
                 webView,
-                new TopPrefixBlockedEvent(webView.getId(), SystemClock.uptimeMillis(), eventData));
+                new TopPrefixBlockedEvent(webView.getId(), SystemClock.currentTimeMillis(), eventData));
             return true;
           }
         }
