@@ -124,7 +124,7 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
     UINavigationItem *item = self.navigationItem;
     item.title = _navItem.title;
     item.prompt = _navItem.subtitle;
-    item.titleView = _navItem.titleImageView;
+    item.titleView = _navItem.titleView;
     item.backBarButtonItem = _navItem.backButtonItem;
     item.leftBarButtonItem = _navItem.leftButtonItem;
     item.rightBarButtonItem = _navItem.rightButtonItem;
@@ -135,6 +135,7 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
       UIView *title = views[1];
       [title removeFromSuperview];
       item.titleView = title;
+      _navItem.titleView = title;
     }
   }
 }
