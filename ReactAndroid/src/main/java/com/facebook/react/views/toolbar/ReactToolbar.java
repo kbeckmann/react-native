@@ -530,7 +530,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     ReactContext reactContext = (ReactContext)getContext();
 
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    ToolbarSearchPressedEvent event = new ToolbarSearchPressedEvent(getId(), SystemClock.uptimeMillis());
+    ToolbarSearchPressedEvent event = new ToolbarSearchPressedEvent(getId());
     eventDispatcher.dispatchEvent(event);
 
     setSearchState(SearchState.VISIBLE_NOT_FOCUSED);
@@ -542,7 +542,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     ReactContext reactContext = (ReactContext)getContext();
 
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    ToolbarSearchTextEvent event = new ToolbarSearchTextEvent(getId(), SystemClock.uptimeMillis(), newText);
+    ToolbarSearchTextEvent event = new ToolbarSearchTextEvent(getId(), newText);
     eventDispatcher.dispatchEvent(event);
 
     return true;
@@ -554,7 +554,7 @@ public class ReactToolbar extends Toolbar implements SearchView.OnQueryTextListe
     ReactContext reactContext = (ReactContext)getContext();
 
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-    ToolbarSearchCancelledEvent event = new ToolbarSearchCancelledEvent(getId(), SystemClock.uptimeMillis());
+    ToolbarSearchCancelledEvent event = new ToolbarSearchCancelledEvent(getId());
     eventDispatcher.dispatchEvent(event);
 
     setSearchState(SearchState.HIDDEN);
