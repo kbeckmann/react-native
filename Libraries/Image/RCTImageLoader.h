@@ -35,6 +35,8 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
              resizeMode:(RCTResizeMode)resizeMode
            responseDate:(NSString *)responseDate;
 
+- (void)clearCache;
+
 @end
 
 @interface UIImage (React)
