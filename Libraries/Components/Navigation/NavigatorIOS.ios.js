@@ -115,6 +115,34 @@ class NavigatorTransitionerIOS extends React.Component {
   }
 }
 
+const SystemIconLabels = {
+  done: true,
+  cancel: true,
+  edit: true,
+  save: true,
+  add: true,
+  compose: true,
+  reply: true,
+  action: true,
+  organize: true,
+  bookmarks: true,
+  search: true,
+  refresh: true,
+  stop: true,
+  camera: true,
+  trash: true,
+  play: true,
+  pause: true,
+  rewind: true,
+  'fast-forward': true,
+  undo: true,
+  redo: true,
+  'page-curl': true,
+};
+const SystemIcons = keyMirror(SystemIconLabels);
+
+type SystemButtonType = $Enum<typeof SystemIconLabels>;
+
 type Route = {
   component: Function,
   title: string,
