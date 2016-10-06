@@ -21,8 +21,8 @@ public class TopPrefixBlockedEvent extends Event<TopPrefixBlockedEvent> {
   public static final String EVENT_NAME = "topPrefixBlocked";
   private WritableMap mEventData;
 
-  public TopPrefixBlockedEvent(int viewId, long timestampMs, WritableMap eventData) {
-    super(viewId, timestampMs);
+  public TopPrefixBlockedEvent(int viewId, WritableMap eventData) {
+    super(viewId);
     mEventData = eventData;
   }
 

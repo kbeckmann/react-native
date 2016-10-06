@@ -172,6 +172,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       return event;
     }
 
+    @Override
     public boolean shouldOverrideUrlLoading(WebView webView, String url) {
       if (url.startsWith("http://") || url.startsWith("https://")) {
         ReactWebView reactWebView = (ReactWebView) webView;
@@ -184,20 +185,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             if (url.startsWith(prefix)) {
               WritableMap eventData = createWebViewEvent(webView, url);
               dispatchEvent(
-                  webView,
-                  new TopPrefixBlockedEvent(webView.getId(), eventData));
+                      webView,
+                      new TopPrefixBlockedEvent(webView.getId(), eventData));
               return true;
             }
           }
         }
         return false;
-      }
-      else {
+      } else {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        view.getContext().startActivity(intent);
+        webView.getContext().startActivity(intent);
         return true;
       }
+    }
   }
 
   /**
