@@ -119,18 +119,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-          return false;
-        } else {
-          Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          view.getContext().startActivity(intent);
-          return true;
-        }
-    }
-
-    @Override
     public void onReceivedError(
         WebView webView,
         int errorCode,
@@ -185,24 +173,31 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-      ReactWebView reactWebView = (ReactWebView) webView;
-      ReadableArray blockedPrefixes = reactWebView.getBlockedPrefixes();
-      if (blockedPrefixes != null) {
-        // Look if a prefix matches the url
-        // and call the callback there is one registered.
-        for (int i = 0; i < blockedPrefixes.size(); i++) {
-          String prefix = blockedPrefixes.getString(i);
-          if (url.startsWith(prefix)) {
-            WritableMap eventData = createWebViewEvent(webView, url);
-            dispatchEvent(
-                webView,
-                new TopPrefixBlockedEvent(webView.getId(), SystemClock.currentTimeMillis(), eventData));
-            return true;
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        ReactWebView reactWebView = (ReactWebView) webView;
+        ReadableArray blockedPrefixes = reactWebView.getBlockedPrefixes();
+        if (blockedPrefixes != null) {
+          // Look if a prefix matches the url
+          // and call the callback there is one registered.
+          for (int i = 0; i < blockedPrefixes.size(); i++) {
+            String prefix = blockedPrefixes.getString(i);
+            if (url.startsWith(prefix)) {
+              WritableMap eventData = createWebViewEvent(webView, url);
+              dispatchEvent(
+                  webView,
+                  new TopPrefixBlockedEvent(webView.getId(), eventData));
+              return true;
+            }
           }
         }
+        return false;
       }
-      return false;
-    }
+      else {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        view.getContext().startActivity(intent);
+        return true;
+      }
   }
 
   /**
