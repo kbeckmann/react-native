@@ -647,10 +647,11 @@ BOOL jsGettingtooSlow =
   if (jsGettingAhead) {
     if (reactPushOne) {
       UIView *lastView = self.reactSubviews.lastObject;
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
+      RCTNavItem *lastItem = (RCTNavItem *)lastView;
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:lastItem];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
-      [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
+      [_navigationController pushViewController:vc animated:(currentReactCount > 1) && !lastItem.disableTransition];
     } else if (reactPopN) {
       UIViewController *viewControllerToPopTo = _navigationController.viewControllers[(currentReactCount - 1)];
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
